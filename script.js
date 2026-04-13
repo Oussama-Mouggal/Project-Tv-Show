@@ -15,49 +15,47 @@ function makePageForEpisodes(episodeList) {
   const episodeGrid = document.createElement("section");
   episodeGrid.className = "episode-grid";
 
+  let episodeCards = createEpisodeCard(episodeList);
 
- let episodeCards = createEpisodeCard(episodeList);
-
-  episodeCards.forEach(card=>episodeGrid.appendChild(card))
+  episodeCards.forEach((card) => episodeGrid.appendChild(card));
   rootElem.appendChild(episodeGrid);
 
   const attribution = document.createElement("footer");
-  attribution.className = "attribution";
+  attribution.id = "attribution";
   attribution.innerHTML =
     'Episode data originally comes from <a href="https://tvmaze.com/" target="_blank" rel="noopener noreferrer">TVMaze.com</a>.';
   rootElem.appendChild(attribution);
 }
 
-function createEpisodeCard(episodeList){
- const cards=[]
-   episodeList.forEach((episode) => {
-     const card = document.createElement("article");
-     card.className = "episode-card";
+function createEpisodeCard(episodeList) {
+  const cards = [];
+  episodeList.forEach((episode) => {
+    const card = document.createElement("article");
+    card.className = "episode-card";
 
-     const title = document.createElement("h2");
-     const episodeCode = formatEpisodeCode(episode.season, episode.number);
-     title.textContent = `${episode.name} - ${episodeCode}`;
+    const title = document.createElement("h2");
+    const episodeCode = formatEpisodeCode(episode.season, episode.number);
+    title.textContent = `${episode.name} - ${episodeCode}`;
 
-     const image = document.createElement("img");
-     image.src = episode.image.medium;
-     image.alt = `${episode.name} (${episodeCode})`;
+    const image = document.createElement("img");
+    image.src = episode.image.medium;
+    image.alt = `${episode.name} (${episodeCode})`;
 
-     const episodeMeta = document.createElement("p");
-     episodeMeta.className = "episode-meta";
-     episodeMeta.textContent = `Season ${episode.season}, Episode ${episode.number}`;
+    const episodeMeta = document.createElement("p");
+    episodeMeta.className = "episode-meta";
+    episodeMeta.textContent = `Season ${episode.season}, Episode ${episode.number}`;
 
-     const summary = document.createElement("div");
-     summary.className = "episode-summary";
-     summary.innerHTML = episode.summary;
+    const summary = document.createElement("div");
+    summary.className = "episode-summary";
+    summary.innerHTML = episode.summary;
 
-     card.appendChild(title);
-     card.appendChild(image);
-     card.appendChild(episodeMeta);
-     card.appendChild(summary);
-     cards.push(card)
-     
-   });
-   return cards;
+    card.appendChild(title);
+    card.appendChild(image);
+    card.appendChild(episodeMeta);
+    card.appendChild(summary);
+    cards.push(card);
+  });
+  return cards;
 }
 
 function formatEpisodeCode(season, episodeNumber) {
