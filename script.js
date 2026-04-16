@@ -2,6 +2,7 @@
 function setup() {
   const allEpisodes = getAllEpisodes();
   makePageForEpisodes(allEpisodes);
+  liveSearch(allEpisodes);
 }
 
 function makePageForEpisodes(episodeList) {
@@ -68,6 +69,28 @@ function formatEpisodeCode(season, episodeNumber) {
   const formattedSeason = String(season).padStart(2, "0");
   const formattedEpisode = String(episodeNumber).padStart(2, "0");
   return `S${formattedSeason}E${formattedEpisode}`;
+}
+
+function liveSearch(allEpisodes) {
+  const searchInput = document.getElementById("search-input");
+  searchInput.addEventListener("input", function () {
+    const searchInputValue = searchInput.value.toLowerCase().trim();
+    const searchResult = [];
+
+    for (let i = 0; i < allEpisodes.length; i++) {
+      const episodeName = (allEpisodes[i].name || "").toLowerCase();
+      const episodeSummary = (allEpisodes[i].summary || "").toLowerCase();
+
+      if (
+        episodeName.includes(searchInputValue) ||
+        episodeSummary.includes(searchInputValue)
+      ) {
+        searchResult.push(allEpisodes[i]);
+      }
+    }
+
+    makePageForEpisodes(searchResult);
+  });
 }
 
 window.onload = setup;
