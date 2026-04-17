@@ -9,7 +9,25 @@
   </head>
 
   <body>
-    <div id="root"></div>
+    <div id="root">
+      <div id="search-controls">
+        <label for="search-input">Search episodes</label>
+        <input
+          id="search-input"
+          type="search"
+          placeholder="Search episodes"
+          name="search"
+        />
+        <p id="search-label" aria-live="polite">Displaying 73/73 episodes</p>
+      </div>
+      <div id="drop-down">
+        <label for="select-episode">Select episode</label>
+        <select id="select-episode" name="select-episode">
+          <option value="" selected disabled>Choose an episode</option>
+          <option value="all-episodes" >All episodes</option>
+        </select>
+      </div>
+    </div>
 
     <!-- Loads a provided function called getAllEpisodes() which returns all episodes -->
     <script src="episodes.js"></script>
