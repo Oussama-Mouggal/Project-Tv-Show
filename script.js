@@ -1,12 +1,12 @@
-// Helper to populate a select element with options
+
 
 const API_URL = "https://api.tvmaze.com/shows/82/episodes";
 const BROKEN_API_URL = "https://api.tvmaze.com/shows/82/episodes-broken";
 const listOfShows = "https://api.tvmaze.com/shows";
 let episodesRequestPromise = null;
-let episodesCache = {}; // showId -> episodes array
+let episodesCache = {}; 
 
-//You can edit ALL of the code here
+
 async function setup() {
   const episodesContentId = "episodes-content";
   let contentDiv = document.getElementById(episodesContentId);
@@ -43,6 +43,9 @@ async function handleShowChange() {
     makePageForEpisodes(episodes);
     liveSearch(episodes);
     selectEpisode(episodes);
+    
+    const episodeSelector = document.getElementById("select-episode");
+    if (episodeSelector) episodeSelector.value = "all-episodes";
     return;
   }
 
@@ -58,6 +61,9 @@ async function handleShowChange() {
     makePageForEpisodes(episodes);
     liveSearch(episodes);
     selectEpisode(episodes);
+    
+    const episodeSelector = document.getElementById("select-episode");
+    if (episodeSelector) episodeSelector.value = "all-episodes";
   } catch (error) {
     renderStatus(
       contentDiv,
