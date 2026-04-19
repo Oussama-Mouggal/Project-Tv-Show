@@ -2,13 +2,17 @@
 
 const API_URL = "https://api.tvmaze.com/shows/82/episodes";
 const BROKEN_API_URL = "https://api.tvmaze.com/shows/82/episodes-broken";
+const listOfShows = "https://api.tvmaze.com/shows";
 let episodesRequestPromise = null;
 
 //You can edit ALL of the code here
 async function setup() {
+  
+
   // Always keep controls visible, only update episodes-content/status
   const episodesContentId = "episodes-content";
   let contentDiv = document.getElementById(episodesContentId);
+  await selectShow()
   if (!contentDiv) {
     contentDiv = document.createElement("div");
     contentDiv.id = episodesContentId;
@@ -66,7 +70,6 @@ function makePageForEpisodes(episodeList) {
   }
   contentDiv.innerHTML = "";
 
-  
   const episodeSelector = document.getElementById("select-episode");
   if (episodeSelector) {
     populateSelect(
@@ -76,7 +79,7 @@ function makePageForEpisodes(episodeList) {
       (ep) => ep.id,
       "Choose an episode",
     );
-    
+
     const allOption = document.createElement("option");
     allOption.value = "all-episodes";
     allOption.textContent = "All episodes";
@@ -227,4 +230,27 @@ function selectEpisode(allEpisodes) {
   });
 }
 
+async function selectShow() {
+  const showSelect = document.getElementById("select-show");
+  try {
+    const response = await fetch(listOfShows);
+    if (!response.ok) {
+      throw new Error(`Request failed with status ${response.status}`);
+    }
+    let shows = await response.json();
+    // Sort shows alphabetically, case-insensitive
+    shows.sort((a, b) =>
+      a.name.localeCompare(b.name, undefined, { sensitivity: "base" }),
+    );
+    populateSelect(
+      showSelect,
+      shows,
+      (show) => show.name,
+      (show) => show.id,
+      "Choose a show",
+    );
+  } catch (error) {
+    showSelect.innerHTML = "<option>Error loading shows</option>";
+  }
+}
 window.onload = setup;
