@@ -1,5 +1,6 @@
 const API_URL = "https://api.tvmaze.com/shows/82/episodes";
 const BROKEN_API_URL = "https://api.tvmaze.com/shows/82/episodes-broken";
+let episodesRequestPromise = null;
 
 //You can edit ALL of the code here
 async function setup() {
@@ -8,13 +9,7 @@ async function setup() {
   renderStatus(rootElem, "Loading episodes, please wait...");
 
   try {
-    const response = await fetch(getApiUrlForRequest());
-
-    if (!response.ok) {
-      throw new Error(`Request failed with status ${response.status}`);
-    }
-
-    const allEpisodes = await response.json();
+    const allEpisodes = await loadEpisodesOnce();
     makePageForEpisodes(allEpisodes);
     liveSearch(allEpisodes);
     selectEpisode(allEpisodes);
@@ -24,6 +19,20 @@ async function setup() {
       "Sorry, episodes could not be loaded right now. Please refresh and try again.",
     );
   }
+}
+
+function loadEpisodesOnce() {
+  if (!episodesRequestPromise) {
+    episodesRequestPromise = fetch(getApiUrlForRequest()).then((response) => {
+      if (!response.ok) {
+        throw new Error(`Request failed with status ${response.status}`);
+      }
+
+      return response.json();
+    });
+  }
+
+  return episodesRequestPromise;
 }
 
 function getApiUrlForRequest() {
