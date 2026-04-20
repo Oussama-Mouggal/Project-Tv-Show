@@ -189,9 +189,15 @@ async function showEpisodes(showId) {
 function setupBackButton() {
   const backButton = document.getElementById("back-to-shows");
   if (backButton) {
-    backButton.addEventListener("click", () => {
+    backButton.addEventListener("click", async () => {
       const episodesView = document.getElementById("episodes-view");
       const showsListingView = document.getElementById("shows-listing-view");
+      const searchInput = document.getElementById("shows-search-input");
+
+      // Clear the search input to show all shows
+      if (searchInput) {
+        searchInput.value = "";
+      }
 
       // Hide episodes view, show shows listing
       if (episodesView) {
@@ -200,6 +206,9 @@ function setupBackButton() {
       if (showsListingView) {
         showsListingView.style.display = "block";
       }
+
+      // Display all shows
+      await displayShowsListing();
     });
   }
 }
