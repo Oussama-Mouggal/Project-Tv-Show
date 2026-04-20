@@ -72,14 +72,15 @@ async function displayShowsListing(showsToDisplay = null) {
     try {
       shows = await fetchShows();
     } catch (error) {
-      showsContent.innerHTML = "<p>Sorry, shows could not be loaded. Please refresh and try again.</p>";
+      showsContent.innerHTML =
+        "<p>Sorry, shows could not be loaded. Please refresh and try again.</p>";
       return;
     }
   }
 
   // Sort shows alphabetically by name (case-insensitive)
-  const sortedShows = shows.sort((a, b) => 
-    a.name.toLowerCase().localeCompare(b.name.toLowerCase())
+  const sortedShows = shows.sort((a, b) =>
+    a.name.toLowerCase().localeCompare(b.name.toLowerCase()),
   );
 
   // Clear and populate shows grid
@@ -93,6 +94,60 @@ async function displayShowsListing(showsToDisplay = null) {
   // Ensure shows listing view is visible
   if (showsListingView) {
     showsListingView.style.display = "block";
+  }
+}
+
+async function showEpisodes(showId) {
+  const showsListingView = document.getElementById("shows-listing-view");
+  const episodesView = document.getElementById("episodes-view");
+  const episodesContentId = "episodes-content";
+  let contentDiv = document.getElementById(episodesContentId);
+
+  // Hide shows listing, show episodes view
+  if (showsListingView) {
+    showsListingView.style.display = "none";
+  }
+  if (episodesView) {
+    episodesView.style.display = "block";
+  }
+
+  // Create episodes content div if it doesn't exist
+  if (!contentDiv) {
+    contentDiv = document.createElement("div");
+    contentDiv.id = episodesContentId;
+    episodesView.appendChild(contentDiv);
+  }
+
+  // Show loading message
+  renderStatus(contentDiv, "Loading episodes, please wait...");
+
+  // Check cache first
+  if (episodesCache[showId]) {
+    const episodes = episodesCache[showId];
+    makePageForEpisodes(episodes);
+    liveSearch(episodes);
+    selectEpisode(episodes);
+    return;
+  }
+
+  // Fetch episodes
+  try {
+    const response = await fetch(
+      `https://api.tvmaze.com/shows/${showId}/episodes`,
+    );
+    if (!response.ok) {
+      throw new Error(`Request failed with status ${response.status}`);
+    }
+    const episodes = await response.json();
+    episodesCache[showId] = episodes;
+    makePageForEpisodes(episodes);
+    liveSearch(episodes);
+    selectEpisode(episodes);
+  } catch (error) {
+    renderStatus(
+      contentDiv,
+      "Sorry, episodes could not be loaded right now. Please refresh and try again.",
+    );
   }
 }
 
