@@ -207,24 +207,13 @@ function setupBackButton() {
 async function setup() {
   setupBackButton();
 
-  const episodesContentId = "episodes-content";
-  let contentDiv = document.getElementById(episodesContentId);
-  await selectShow();
-  if (!contentDiv) {
-    contentDiv = document.createElement("div");
-    contentDiv.id = episodesContentId;
-    document.getElementById("root").appendChild(contentDiv);
-  }
-  renderStatus(contentDiv, "Select a show to view episodes.");
+  // Display shows listing on page load
+  await displayShowsListing();
 
+  // Setup event listeners for episodes view
   const showSelect = document.getElementById("select-show");
   if (showSelect) {
     showSelect.addEventListener("change", handleShowChange);
-
-    if (showSelect.options.length > 1) {
-      showSelect.selectedIndex = 1;
-      await handleShowChange();
-    }
   }
 }
 
