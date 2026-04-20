@@ -91,6 +91,12 @@ async function displayShowsListing(showsToDisplay = null) {
     showsContent.appendChild(showCard);
   });
 
+  // Show initial match count
+  const matchCount = document.getElementById("shows-match-count");
+  if (matchCount) {
+    matchCount.textContent = `Displaying ${sortedShows.length}/${sortedShows.length} shows`;
+  }
+
   // Setup show search
   setupShowsSearch(sortedShows);
 
@@ -100,36 +106,48 @@ async function displayShowsListing(showsToDisplay = null) {
   }
 }
 
+const showSearchListenersAdded = new WeakSet();
+
+function showMatchesSearch(show, searchTerm) {
+  if (!searchTerm) return true;
+  const name = (show.name || "").toLowerCase();
+  const summary = (show.summary || "").toLowerCase();
+  const genres = (show.genres ? show.genres.join(", ") : "").toLowerCase();
+  return (
+    name.includes(searchTerm) ||
+    summary.includes(searchTerm) ||
+    genres.includes(searchTerm)
+  );
+}
+
 function setupShowsSearch(allShows) {
   const searchInput = document.getElementById("shows-search-input");
-  if (!searchInput) return;
+  if (!searchInput || showSearchListenersAdded.has(searchInput)) return;
+
+  const showsContent = document.getElementById("shows-content");
+  const matchCount = document.getElementById("shows-match-count");
 
   searchInput.addEventListener("input", function () {
     const searchTerm = searchInput.value.toLowerCase().trim();
+    const filteredShows = allShows.filter((show) =>
+      showMatchesSearch(show, searchTerm),
+    );
 
-    if (!searchTerm) {
-      // If search is empty, display all shows
-      displayShowsListing(allShows);
-      return;
+    if (matchCount) {
+      matchCount.textContent = `Displaying ${filteredShows.length}/${allShows.length} shows`;
     }
 
-    // Filter shows by name, genres, or summary
-    const filteredShows = allShows.filter((show) => {
-      const name = (show.name || "").toLowerCase();
-      const genres = show.genres
-        ? show.genres.map((g) => g.toLowerCase()).join(" ")
-        : "";
-      const summary = (show.summary || "").toLowerCase();
-
-      return (
-        name.includes(searchTerm) ||
-        genres.includes(searchTerm) ||
-        summary.includes(searchTerm)
-      );
-    });
-
-    displayShowsListing(filteredShows);
+    if (showsContent) {
+      showsContent.innerHTML = "";
+      filteredShows.forEach((show) => {
+        const showCard = createShowCard(show);
+        showCard.addEventListener("click", () => showEpisodes(show.id));
+        showsContent.appendChild(showCard);
+      });
+    }
   });
+
+  showSearchListenersAdded.add(searchInput);
 }
 
 async function showEpisodes(showId) {
