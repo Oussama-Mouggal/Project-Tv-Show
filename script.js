@@ -39,10 +39,14 @@ function createShowCard(show) {
   const meta = document.createElement("div");
   meta.className = "show-meta";
   const status = show.status ? `Status: ${show.status}` : "";
-  const rating = show.rating?.average ? `Rating: ${show.rating.average}/10` : "";
+  const rating = show.rating?.average
+    ? `Rating: ${show.rating.average}/10`
+    : "";
   const runtime = show.runtime ? `Runtime: ${show.runtime} min` : "";
   const genres = show.genres?.length ? `Genres: ${show.genres.join(", ")}` : "";
-  meta.textContent = [status, rating, runtime, genres].filter(Boolean).join(" • ");
+  meta.textContent = [status, rating, runtime, genres]
+    .filter(Boolean)
+    .join(" • ");
 
   const summary = document.createElement("div");
   summary.className = "show-summary";
@@ -54,6 +58,42 @@ function createShowCard(show) {
   card.appendChild(summary);
 
   return card;
+}
+
+async function displayShowsListing(showsToDisplay = null) {
+  const showsContent = document.getElementById("shows-content");
+  const showsListingView = document.getElementById("shows-listing-view");
+
+  if (!showsContent) return;
+
+  // Fetch shows if not provided
+  let shows = showsToDisplay;
+  if (!shows) {
+    try {
+      shows = await fetchShows();
+    } catch (error) {
+      showsContent.innerHTML = "<p>Sorry, shows could not be loaded. Please refresh and try again.</p>";
+      return;
+    }
+  }
+
+  // Sort shows alphabetically by name (case-insensitive)
+  const sortedShows = shows.sort((a, b) => 
+    a.name.toLowerCase().localeCompare(b.name.toLowerCase())
+  );
+
+  // Clear and populate shows grid
+  showsContent.innerHTML = "";
+  sortedShows.forEach((show) => {
+    const showCard = createShowCard(show);
+    showCard.addEventListener("click", () => showEpisodes(show.id));
+    showsContent.appendChild(showCard);
+  });
+
+  // Ensure shows listing view is visible
+  if (showsListingView) {
+    showsListingView.style.display = "block";
+  }
 }
 
 async function setup() {
