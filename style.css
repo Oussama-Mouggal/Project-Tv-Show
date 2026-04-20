@@ -58,7 +58,7 @@ h1 {
   text-align: center;
 }
 
-#select-show-drop-down{
+#select-show-drop-down {
   margin-bottom: 1rem;
 }
 
@@ -87,7 +87,9 @@ h1 {
   border-radius: 0.5rem;
   overflow: hidden;
   cursor: pointer;
-  transition: transform 0.2s, box-shadow 0.2s;
+  transition:
+    transform 0.2s,
+    box-shadow 0.2s;
 }
 
 .show-card:hover {

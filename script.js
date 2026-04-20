@@ -4,8 +4,29 @@ const API_URL = "https://api.tvmaze.com/shows/82/episodes";
 const BROKEN_API_URL = "https://api.tvmaze.com/shows/82/episodes-broken";
 const listOfShows = "https://api.tvmaze.com/shows";
 let episodesRequestPromise = null;
-let episodesCache = {}; 
+let episodesCache = {};
+let showsCache = null;
 
+
+async function fetchShows() {
+  // Return cached shows if already fetched
+  if (showsCache) {
+    return showsCache;
+  }
+
+  try {
+    const response = await fetch(listOfShows);
+    if (!response.ok) {
+      throw new Error(`Request failed with status ${response.status}`);
+    }
+    const shows = await response.json();
+    showsCache = shows;
+    return shows;
+  } catch (error) {
+    console.error("Error fetching shows:", error);
+    throw error;
+  }
+}
 
 async function setup() {
   const episodesContentId = "episodes-content";
