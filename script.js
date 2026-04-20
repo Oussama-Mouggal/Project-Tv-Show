@@ -135,6 +135,7 @@ function setupShowsSearch(allShows) {
 async function showEpisodes(showId) {
   const showsListingView = document.getElementById("shows-listing-view");
   const episodesView = document.getElementById("episodes-view");
+  const showSelect = document.getElementById("select-show");
   const episodesContentId = "episodes-content";
   let contentDiv = document.getElementById(episodesContentId);
 
@@ -144,6 +145,9 @@ async function showEpisodes(showId) {
   }
   if (episodesView) {
     episodesView.style.display = "block";
+  }
+  if (showSelect) {
+    showSelect.value = String(showId);
   }
 
   // Create episodes content div if it doesn't exist
@@ -209,6 +213,7 @@ async function setup() {
 
   // Display shows listing on page load
   await displayShowsListing();
+  await selectShow();
 
   // Setup event listeners for episodes view
   const showSelect = document.getElementById("select-show");
@@ -453,11 +458,7 @@ function selectEpisode(allEpisodes) {
 async function selectShow() {
   const showSelect = document.getElementById("select-show");
   try {
-    const response = await fetch(listOfShows);
-    if (!response.ok) {
-      throw new Error(`Request failed with status ${response.status}`);
-    }
-    let shows = await response.json();
+    let shows = await fetchShows();
 
     shows.sort((a, b) =>
       a.name.localeCompare(b.name, undefined, { sensitivity: "base" }),
